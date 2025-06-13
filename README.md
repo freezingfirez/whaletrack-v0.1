@@ -47,4 +47,4 @@ A lightweight “sniper rifle” for detecting and tracking crypto “whale” o
 1. **Clone repo**  
    ```bash
    git clone https://github.com/freezingfirez/whaletrack-v0.1.git
-   cd whaletrack
+   cd whaletrack-v0.1
