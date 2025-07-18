@@ -1,7 +1,8 @@
 // src/pages/SetupDetail.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChartEmbed } from "../components/ChartEmbed";
+import { formatSymbol } from "../utils/formatSymbol";
 
 interface Setup {
   id: number;
@@ -58,23 +59,6 @@ export default function SetupDetail() {
   if (loading) return <p className="p-8 text-center">Loading…</p>;
   if (!setup)  return <p className="p-8 text-center">Setup not found.</p>;
 
-  // Helper to map "BTC/USD" → "BINANCE:BTCUSDT" etc.
-  const formatSymbol = (pair: string) => {
-    let base: string, quote: string;
-    if (pair.includes("/")) {
-      [base, quote] = pair.split("/");
-    } else if (pair.toUpperCase().endsWith("USDT")) {
-      base = pair.slice(0, -4); quote = "USDT";
-    } else if (pair.toUpperCase().endsWith("USD")) {
-      base = pair.slice(0, -3); quote = "USD";
-    } else {
-      base = pair; quote = "";
-    }
-    const mappedQuote = quote.toUpperCase() === "USD" ? "USDT" : quote.toUpperCase();
-    return mappedQuote
-      ? `BINANCE:${base.toUpperCase()}${mappedQuote}`
-      : `BINANCE:${base.toUpperCase()}`;
-  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -92,7 +76,7 @@ export default function SetupDetail() {
       // once saved, refresh chart in place
       // we re-load the setup so ChartEmbed picks up the toggles
       const updated = await res.json();
-      setSetup((s) => updated);
+      setSetup(() => updated);
     } catch (err) {
       console.error("Save error:", err);
       alert("Failed to save tags.");

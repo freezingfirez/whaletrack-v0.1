@@ -1,10 +1,19 @@
 // src/components/ChartEmbed.tsx
 import React, { useState, useRef, useEffect } from 'react';
 
+declare global {
+  interface Window {
+    TradingView?: {
+      widget: new (opts: unknown) => unknown;
+    };
+  }
+}
+
 interface ChartEmbedProps {
   symbol: string;
   interval: string;
   containerId: string;
+  height?: number;
   showCompression?: boolean;
   showOrderBlock?: boolean;
   showLiquidityTrap?: boolean;
@@ -14,20 +23,21 @@ export const ChartEmbed: React.FC<ChartEmbedProps> = ({
   symbol,
   interval,
   containerId,
+  height: initialHeight = 400,
   showCompression = false,
   showOrderBlock = false,
   showLiquidityTrap = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(400);
+  const [height, setHeight] = useState(initialHeight);
   const resizing = useRef(false);
 
   // Load TradingView widget
   useEffect(() => {
-    if ((window as any).TradingView && containerRef.current) {
+    if ((window as Window).TradingView && containerRef.current) {
       // clear existing
       containerRef.current.innerHTML = '';
-      new (window as any).TradingView.widget({
+      new (window as Window).TradingView!.widget({
         container_id: containerId,
         symbol,
         interval,
@@ -40,7 +50,7 @@ export const ChartEmbed: React.FC<ChartEmbedProps> = ({
         },
       });
     }
-  }, [symbol, interval, height, showCompression, showOrderBlock, showLiquidityTrap]);
+  }, [symbol, interval, containerId, height, showCompression, showOrderBlock, showLiquidityTrap]);
 
   // Drag-to-resize handling
   const onMouseDown = (e: React.MouseEvent) => {

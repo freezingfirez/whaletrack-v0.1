@@ -1,8 +1,9 @@
 // src/pages/Dashboard.tsx
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChartEmbed } from "../components/ChartEmbed";
+import { formatSymbol } from "../utils/formatSymbol";
 
 interface Setup {
   id: number;
@@ -41,24 +42,18 @@ export default function Dashboard() {
     (!filters.liquidityTrap || s.is_liquidity_trap)
   );
 
-  const formatSymbol = (pair: string) => {
-    let base = pair.replace(/\W/g, "");
-    let quote = base.endsWith("USDT") ? "USDT" : base.endsWith("USD") ? "USD" : "";
-    base = quote ? base.slice(0, -quote.length) : base;
-    const mapped = quote === "USD" ? "USDT" : quote;
-    return `BINANCE:${base.toUpperCase()}${mapped}`;
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-6">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-5xl font-extrabold text-blue-800">🦈 WhaleTrack</h1>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <Link to="/new" className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700">New Setup</Link>
           {([['compression','Compression'], ['orderBlock','Order Block'], ['liquidityTrap','Liquidity Trap']] as const).map(([key,label]) => (
             <button
               key={key}
               onClick={() => toggle(key)}
-              className={`px-4 py-2 rounded-full font-medium border transition 
+              className={`px-4 py-2 rounded-full font-medium border transition
                 ${filters[key] ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-600 border-blue-300'}`}
             >{label}</button>
           ))}
